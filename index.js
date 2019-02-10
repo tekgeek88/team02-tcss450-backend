@@ -10,6 +10,8 @@ app.use('/register', require('./routes/register.js'));
 
 app.use('/confirm', require('./routes/confirm.js'));
 
+app.use('/weather', middleware.checkToken, require('./routes/weather.js'));
+
 
 /*
  * Return HTML for the / end point. 
