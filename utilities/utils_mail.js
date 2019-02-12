@@ -55,12 +55,9 @@ function sendVerificationEmail(firstName, email, request, token) {
                       '<a href="' + address + '">Click Me!</a>' +
                     '</body>' +
                   '</html>';
-
                   /*
-                  
-                      '<a href="' + request.headers.host + '/confirm/?token=' + token.token + '">Click Here to confirm email addres!</a>' +
+                      '<a href="' + request.headers.host + '/confirm/?token=' + token.token + '">Click Here to confirm email address!</a>' +
                   */
-
   sendEmail("no-reply@ourapp.com", email, subject, message);
 }
 

@@ -12,6 +12,10 @@ app.use('/confirm', require('./routes/confirm.js'));
 
 app.use('/weather', middleware.checkToken, require('./routes/weather.js'));
 
+app.use('/pushy', middleware.checkToken, require('./routes/pushy.js'));
+
+app.use('/messaging', middleware.checkToken, require('./routes/messaging.js'));
+
 
 /*
  * Return HTML for the / end point. 
