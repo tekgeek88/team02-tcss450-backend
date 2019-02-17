@@ -31,6 +31,7 @@ router.post('/', [
     .custom(async value => {
         return await db.one('SELECT Email FROM Members WHERE Email=$1', [value])
             .then(row => {
+                console.log("false");
                 return false;
             })
             .catch((err) => {      
@@ -41,6 +42,7 @@ router.post('/', [
     .custom(async value => {
         return await db.one('SELECT Username FROM Members WHERE Username=$1', [value])
             .then(row => {
+                console.log("false");
                 return false;
             })
             .catch((err) => {      
@@ -50,8 +52,6 @@ router.post('/', [
     // Must be at least 6 characters long and contain a number
     check('password', 'Must contain at least 6 characters!').isLength({ min: 6 })
     .matches(/\d/).withMessage('Must contain a number!')
-    .custom
-
 ], (req, res) => {
     res.type("application/json");
 
@@ -87,7 +87,7 @@ router.post('/', [
         db.one('SELECT MemberID, Email FROM Members WHERE Email=$1', [email])
         .then(row => {
             //If successful, create a verification token for this user.
-            var token ={
+            var token = {
                 memberID: row['memberid'],
                 token: crypto.randomBytes(16).toString('hex')
             };
