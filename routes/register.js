@@ -57,21 +57,22 @@ router.post('/', (req, res) => {
                 };
 
                 db.none("INSERT INTO VerificationToken(MemberID, Token) VALUES ($1, $2)", [token.memberID, token.token])
-                .then(() => {
-                    console.log("Generating a verification token...");
-                    // If email did not send an error
-                    sendVerificationEmail(first, email, req, token);
-                    res.status(200);
+                    .then(() => {
+                        console.log("Generating a verification token...");
+                        // If email did not send an error
+                        sendVerificationEmail(first, email, req, token);
+                        res.status(200);
 
 
-                }).catch((err) => {
-                    //log the error
-                    console.log(err);
-                    // Not sure why we would have an error here, we would have just made the user account
-                    res.send({
-                        success: false,
-                        error: err
-                    });
+                    })
+                .catch((err) => {
+                //log the error
+                console.log(err);
+                // Not sure why we would have an error here, we would have just made the user account
+                res.send({
+                    success: false,
+                    error: err
+                });
                 });
             }).catch((err) => {
                 //log the error
