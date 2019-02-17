@@ -28,7 +28,7 @@ router.post('/', [
     check('first').not().isEmpty().withMessage('Must use a first name!'),
     check('last').not().isEmpty().withMessage('Must use a last name!'),
     check('email').isEmail().withMessage('Must use a valid email address')
-    .custom(async function(value) {
+    .custom(async value => {
         return await db.one('SELECT Email FROM Members WHERE Email=$1', [value])
             .then(row => {
                 return false;
@@ -38,7 +38,7 @@ router.post('/', [
             });
     }).withMessage("That email already exists!"),
     check('username').not().isEmpty().withMessage('Must use a username')
-    .custom(async function(value) {
+    .custom(async value => {
         return await db.one('SELECT Username FROM Members WHERE Username=$1', [value])
             .then(row => {
                 return false;
@@ -50,6 +50,7 @@ router.post('/', [
     // Must be at least 6 characters long and contain a number
     check('password', 'Must contain at least 6 characters!').isLength({ min: 6 })
     .matches(/\d/).withMessage('Must contain a number!')
+    .custom
 
 ], (req, res) => {
     res.type("application/json");
@@ -58,7 +59,9 @@ router.post('/', [
     // the android ap developer can use to notify the user of the issues.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.send({ errors: errors.array() });
+        return res.send({ 
+            success: false,
+            data: errors.array() });
     }
 
     //Retrieve data from query params
