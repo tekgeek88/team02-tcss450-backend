@@ -90,6 +90,7 @@ router.get("/", (req, res) => {
 
 });
 
+// Ignore this, not used
 // Handle the post with the token
 router.post('/', urlencodedParser, (req, res) => {
     // Validate the token

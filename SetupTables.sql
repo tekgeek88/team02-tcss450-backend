@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS Members;
 CREATE TABLE Members (MemberID SERIAL PRIMARY KEY,
                       FirstName VARCHAR(255) NOT NULL,
-		              LastName VARCHAR(255) NOT NULL,
+		                  LastName VARCHAR(255) NOT NULL,
                       Username VARCHAR(255) NOT NULL UNIQUE,
                       Email VARCHAR(255) NOT NULL UNIQUE,
                       Password VARCHAR(255) NOT NULL,
@@ -27,7 +27,7 @@ DROP TABLE IF EXISTS ChatMembers;
 CREATE TABLE ChatMembers (ChatID INT NOT NULL,
                           MemberID INT NOT NULL,
                           FOREIGN KEY(MemberID) REFERENCES Members(MemberID),
-                          FOREIGN KEY(ChatID) REFERENCES Chats(ChatID)
+                          FOREIGN KEY(ChatID) REFERENCES Chats(ChatID) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS Messages;
@@ -41,13 +41,14 @@ CREATE TABLE Messages (PrimaryKey SERIAL PRIMARY KEY,
 );
 
 DROP TABLE IF EXISTS Locations;
-CREATE TABLE Locations (PrimaryKey SERIAL PRIMARY KEY,
-                        MemberID INT,
-                        Nickname VARCHAR(255),
+CREATE TABLE Locations (ID SERIAL UNIQUE,
+                        MemberID INT NOT NULL,
+                        Nickname VARCHAR(255) NOT NULL,
                         Lat DECIMAL,
                         Long DECIMAL,
                         ZIP INT,
-                        FOREIGN KEY(MemberID) REFERENCES Members(MemberID)
+                        PRIMARY KEY (MemberID, Nickname),
+                        FOREIGN KEY(MemberID) REFERENCES Members(MemberID) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS Demo;
@@ -60,7 +61,7 @@ DROP TABLE IF EXISTS Push_Token;
 CREATE TABLE Push_Token (KeyID SERIAL PRIMARY KEY,
                         MemberID INT NOT NULL UNIQUE,
                         Token VARCHAR(255),
-                        FOREIGN KEY(MemberID) REFERENCES Members(MemberID)
+                        FOREIGN KEY(MemberID) REFERENCES Members(MemberID) ON DELETE CASCADE
 );
 
 
