@@ -21,7 +21,6 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 router.get("/", (req, res) => {
     
     // Validate the token
-
     let token = req.query['token'];
 
     if (!token) {
@@ -55,11 +54,15 @@ router.get("/", (req, res) => {
                 .then(() => {
 
                 // We successfully verified the user
-                console.log("check the Members table and see if we have a verified member!");
-                res.status(200).send({
-                    success: true,
-                    msg: "The account has been verified. Please log in."
-                });
+                res.type('html');
+                res.send(`<html>
+                            <body>
+                            <h2>Hello Thank you for confirming your account!</h2>
+                            <h3>Please log in using your mobile app</h3>
+                            <h5>This page is under construction</h5>
+                            </body>
+                        </html>`
+                );
 
                 })
                 .catch((err) => {
@@ -132,7 +135,6 @@ router.post('/', urlencodedParser, (req, res) => {
                 .then(() => {
 
                 // We successfully verified the user
-                console.log("check the Members table and see if we have a verified member!");
                 res.status(200).send({
                     success: true,
                     msg: "The account has been verified. Please log in."
