@@ -6,6 +6,7 @@ const app = express();
 let middleware = require('./utilities/middleware');
 
 app.use('/login', require('./routes/login.js'));
+
 app.use('/register', require('./routes/register.js'));
 
 app.use('/confirm', require('./routes/confirm.js'));

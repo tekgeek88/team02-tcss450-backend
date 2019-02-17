@@ -86,7 +86,6 @@ router.get("/locations", (req, res) => {
 
     let username = req.query['username'];
 
-
     // Inform the user if they didn't enter username or location
     if (!username) {
         return res.send({
@@ -112,8 +111,6 @@ router.get("/locations", (req, res) => {
                 console.log("*******: " + err);
             return next(err);
             });
-
-        
     })
     .catch((err) => {
         // If we fail here its likely because we violated the uniqueness constraint

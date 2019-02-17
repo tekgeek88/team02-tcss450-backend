@@ -1,13 +1,5 @@
 const nodemailer = require('nodemailer');
-  
-// We only need to create the transport opbject once.
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USERNAME,
-    pass: process.env.EMAIL_PASSWORD
-  }
-});
+
 
 function emailHandler(error, info) {
   if (error) {
@@ -20,8 +12,17 @@ function emailHandler(error, info) {
 }
 
 // This method handles the sending of all emails
-function sendEmail(from, receiver, subj, message) {
+async function sendEmail(from, receiver, subj, message) {
   
+  // We only need to create the transport opbject once.
+  let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USERNAME,
+      pass: process.env.EMAIL_PASSWORD
+    }
+  });
+
   // Build the email ooptions
   let mailOptions = {
     from: from,
@@ -29,8 +30,11 @@ function sendEmail(from, receiver, subj, message) {
     subject: subj,
     html: message
   };
+
+  return await transporter.sendMail(mailOptions);
+
   // Send the message
-  transporter.sendMail(mailOptions, emailHandler);
+  // transporter.sendMail(mailOptions, emailHandler);
 }
 
 
@@ -39,26 +43,24 @@ function sendWelcomeEmail(firstName, email) {
   let welcomeSubject = "A refactored Welcome! ";
   let welcomeMessage = "<strong>A refactored Welcome to our app " + firstName + "!</strong>";
 
-  sendEmail("admin@ourapp.com", email, welcomeSubject, welcomeMessage);
+sendEmail("admin@ourapp.com", email, welcomeSubject, welcomeMessage);
 }
 
 
-function sendVerificationEmail(firstName, email, request, token) {
+async function sendVerificationEmail(firstName, email, request, token) {
 
   let subject = "Account Verification Required";
 
   let address = "http://" + request.headers.host + "/confirm?token=" + token.token;
   
-  let message = '<html>' +
-                    '<body>' +
-                      '<h2>Hello ' + firstName + ', please click the link below to confirm your email address</h2>' +
-                      '<a href="' + address + '">Click Me!</a>' +
-                    '</body>' +
-                  '</html>';
-                  /*
-                      '<a href="' + request.headers.host + '/confirm/?token=' + token.token + '">Click Here to confirm email address!</a>' +
-                  */
-  sendEmail("no-reply@ourapp.com", email, subject, message);
+  let message = `<html>
+                    <body>
+                      <h2>Hello ${firstName}, please click the link below to confirm your email address</h2>
+                      <a href="${address}">${address}</a>
+                    </body>
+                  </html>`
+  return await sendEmail("no-reply@ourapp.com", email, subject, message);
+  
 }
 
 
