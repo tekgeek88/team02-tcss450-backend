@@ -59,7 +59,9 @@ router.post('/', [
     // the android ap developer can use to notify the user of the issues.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.send({ errors: errors.array() });
+        return res.send({ 
+            success: false,
+            data: errors.array() });
     }
 
     //Retrieve data from query params
