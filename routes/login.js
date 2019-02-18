@@ -49,21 +49,23 @@ router.post('/', (req, res) => {
                     //package and send the results
                     res.json({
                         success: true,
-                        message: 'Authentication successful!',
+                        msg: 'Authentication successful!',
                         token: token
                     });
                 }else{
-                     //Has not been verified yet
-                     console.log("Verify your email address!");
+
                     res.send({
-                    success: false 
+                    success: false ,
+                    msg: "Email verification required!"
                     });
 
                 }
             } else {
-                //credentials dod not match
+                //credentials do not match
                 res.send({
-                    success: false 
+                    success: false,
+                    msg: "Credentials do not match!" 
+
                 });
             }
         })
@@ -72,13 +74,20 @@ router.post('/', (req, res) => {
             //If anything happened, it wasn't successful
             res.send({
                 success: false,
-                message: err
+                msg: "Account not found!"
             });
         });
     } else {
+        
+        if (!email) {
+
+        } else if (!theirPw) {
+
+        }
+
         res.send({
             success: false,
-            message: 'missing credentials'
+            msg: 'Email and Password are required'
         });
     }
 });
