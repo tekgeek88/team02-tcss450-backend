@@ -82,7 +82,22 @@ function sendVerificationEmailByPost(firstName, email, request, token) {
 
   sendEmail("no-reply@ourapp.com", email, subject, message);
 }
+async function sendPasswordEmail(email, newPassword) {
+
+  let subject = "Temporary Password for Chatter";
+
+  let message = `<html>
+                    <body>
+                      <h2>Hello , please use the password below as sign in into the app</h2>
+                      <a href="${newPassword}">${newPassword}</a>
+                    </body>
+                  </html>`
+  return await sendEmail("no-reply@ourapp.com", email, subject, message);
+  
+}
+
+
 
 module.exports = {
-  sendEmail, sendWelcomeEmail, sendVerificationEmail
+  sendEmail, sendWelcomeEmail, sendVerificationEmail, sendPasswordEmail
 }
