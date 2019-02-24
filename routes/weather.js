@@ -11,24 +11,22 @@ let db = require('../utilities/utils').db;
 //######    YAHOO WEATHER OAUTH API     ########
 let OAuth = require('oauth');
 
+// ##### OAuth Headers for Yahoo Weather
 let header = {
     "Yahoo-App-Id": process.env.YAHOO_APP_ID
 };
 
+// ##### OAuth Request body for Yahoo Weather
 let request = new OAuth.OAuth (
-    null,
-    null,
+    null, null,
     process.env.YAHOO_CLIENT_ID,
     process.env.YAHOO_CLIENT_SECRET,
-    '1.0',
-    null,
-    'HMAC-SHA1',
-    null,
+    '1.0', null, 'HMAC-SHA1', null,
     header
 );
 
 
-// ######   Retrieve Weather Data - Current and Daily forecasts  ######
+// ########   Retrieve current OR daily forecast  ########
 router.get("/forecast", (req, res) => {
     res.type("application/json");
     let url = `https://weather-ydn-yql.media.yahoo.com/forecastrss?`;
@@ -78,11 +76,10 @@ router.get("/forecast", (req, res) => {
         }
     );
 });
-// ######  END Retrieve Weather Data - Current and Daily forecasts  ######
 
 
-// ######   Retrieve Weather Data - Hourly forecasts  ######
-router.post("/forecast/hourly", (req, res) => {
+// ########   Retrieve Weather Data - Hourly forecasts  ########
+router.get("/forecast/hourly", (req, res) => {
     res.type("application/json");
     let urlYahoo = `https://weather-ydn-yql.media.yahoo.com/forecastrss?`;
     let urlDarkSky = `https://api.darksky.net/forecast/${process.env.DARK_SKY_SECRET_KEY}/`;
@@ -152,10 +149,9 @@ router.post("/forecast/hourly", (req, res) => {
         }
     }
 });
-// ######  END Retrieve Weather Data - Current and Hourly forecasts  ######
 
 
-// #################     Save Weather Data  ##########################
+// ########   Fetched saved weather data   ########
 router.get("/locations", (req, res) => {
     res.type("application/json");
 
@@ -198,11 +194,7 @@ router.get("/locations", (req, res) => {
 });
 
 
-
-
-
-
-// #################     Converting to be one endpoint for both zip and coordinates    ##########################
+// ########   Insert a forecast location   ########
 router.put("/locations", (req, res) => {
     res.type("application/json");
 
@@ -211,7 +203,6 @@ router.put("/locations", (req, res) => {
     let nickname = req.query['nickname'];
     let lat = req.query['lat'];
     let lon = req.query['lon'];
-
 
     // Inform the user if they didn't enter username
     if (!username) {
@@ -301,6 +292,7 @@ router.put("/locations", (req, res) => {
 });
 
 
+// ########   Delete a forecast location   ########
 router.delete("/locations", (req, res) => {
     res.type("application/json");
 
@@ -357,25 +349,4 @@ router.delete("/locations", (req, res) => {
 // #################     Save Weather Data  ##########################
 
 
-
-function getZipCodeFromLatLon(zipcode) { 
-    
-    https.get('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY', (resp) => {
-    let data = '';
-
-    // A chunk of data has been recieved.
-    resp.on('data', (chunk) => {
-        data += chunk;
-    });
-
-    // The whole response has been received. Print out the result.
-    resp.on('end', () => {
-        console.log(JSON.parse(data).explanation);
-    });
-
-    }).on("error", (err) => {
-        console.log("Error: " + err.message);
-    });
-
-}
 module.exports = router;

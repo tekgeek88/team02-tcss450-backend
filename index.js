@@ -1,25 +1,25 @@
-//express is the framework we're going to use to handle requests
+// Express is the framework we're going to use to handle requests
 const express = require('express');
-//Create a new instance of express
+// Create a new instance of express
 const app = express();
-
+// Ese middleware to distribute JWT tokens
 let middleware = require('./utilities/middleware');
 
+
+//############   Community Routes   ############
 app.use('/login', require('./routes/login.js'));
-
 app.use('/register', require('./routes/register.js'));
-
 app.use('/confirm', require('./routes/confirm.js'));
-
 app.use('/changePassword', require('./routes/changePassword.js'));
-
 app.use('/resetPassword', require('./routes/resetPassword.js'));
 
+//############   Weather Routes   ############
 app.use('/weather', middleware.checkToken, require('./routes/weather.js'));
 
+//############   Messaging Routes   ############
 app.use('/pushy', middleware.checkToken, require('./routes/pushy.js'));
-
-app.use('/messaging', middleware.checkToken, require('./routes/chatter/messaging.js'));
+app.use('/messaging', middleware.checkToken, require('./routes/messaging.js'));
+app.use('/connections', middleware.checkToken, require('./routes/connections.js'));
 
 
 /*

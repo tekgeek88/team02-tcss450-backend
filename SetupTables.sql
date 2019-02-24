@@ -10,10 +10,11 @@ CREATE TABLE Members (MemberID SERIAL PRIMARY KEY,
 );
 
 DROP TABLE IF EXISTS Contacts;
-CREATE TABLE Contacts(PrimaryKey SERIAL PRIMARY KEY,
+CREATE TABLE Contacts(ID SERIAL,
                       MemberID_A INT NOT NULL,
                       MemberID_B INT NOT NULL,
                       Verified INT DEFAULT 0,
+                      PRIMARY KEY (MemberID_A, MemberID_B),
                       FOREIGN KEY(MemberID_A) REFERENCES Members(MemberID),
                       FOREIGN KEY(MemberID_B) REFERENCES Members(MemberID)
 );
