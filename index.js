@@ -15,11 +15,11 @@ app.use('/changePassword', require('./routes/changePassword.js'));
 
 app.use('/resetPassword', require('./routes/resetPassword.js'));
 
-app.use('/weather', require('./routes/weather.js'));
+app.use('/weather', middleware.checkToken, require('./routes/weather.js'));
 
 app.use('/pushy', middleware.checkToken, require('./routes/pushy.js'));
 
-app.use('/messaging', middleware.checkToken, require('./routes/messaging.js'));
+app.use('/messaging', middleware.checkToken, require('./routes/chatter/messaging.js'));
 
 
 /*

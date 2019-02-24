@@ -2,11 +2,11 @@ const express = require('express');
 
 let router = express.Router();
 
+// request module is needed to make a request to a web service
+const httpRequest = require('request');
+
 //Create connection to Heroku Database
 let db = require('../utilities/utils').db;
-
-const bodyParser = require("body-parser");
-
 
 //######    YAHOO WEATHER OAUTH API     ########
 let OAuth = require('oauth');
@@ -26,12 +26,11 @@ let request = new OAuth.OAuth (
     null,
     header
 );
-//######    YAHOO WEATHER OAUTH API     ########
 
 
-
+// ######   Retrieve Weather Data - Current and Daily forecasts  ######
 router.get("/forecast", (req, res) => {
-
+    res.type("application/json");
     let url = `https://weather-ydn-yql.media.yahoo.com/forecastrss?`;
     let location = req.query['location'] || "";
     let lat = req.query['lat'] || "";
@@ -42,7 +41,7 @@ router.get("/forecast", (req, res) => {
         if(isNaN(location)) {
             return res.send({
                 success: false,
-                error: "Please check your URL and zip code and try again"
+                error: "Please check your URL and zip code befre trying again"
             });
         } else {
             url += `location=${location}&u=${units}&format=json`;
@@ -66,9 +65,11 @@ router.get("/forecast", (req, res) => {
     request.get( url, null,  null,
         function (err, data, result) {
             if (err) {
+                console.log("URL: " + url);
+                console.log(err);
                 return res.send({
                     success: false,
-                    msg: "Could not connect to 3rd part weather provider"
+                    msg: "Could not connect to 3rd party weather provider"
                 });
             } else {
                 res.type("application/json");
@@ -77,7 +78,81 @@ router.get("/forecast", (req, res) => {
         }
     );
 });
-// #################     Retrieve Weather Data  ##########################
+// ######  END Retrieve Weather Data - Current and Daily forecasts  ######
+
+
+// ######   Retrieve Weather Data - Hourly forecasts  ######
+router.post("/forecast/hourly", (req, res) => {
+    res.type("application/json");
+    let urlYahoo = `https://weather-ydn-yql.media.yahoo.com/forecastrss?`;
+    let urlDarkSky = `https://api.darksky.net/forecast/${process.env.DARK_SKY_SECRET_KEY}/`;
+    let location = req.query['location'] || "";
+    let lat = req.query['lat'] || "";
+    let lon = req.query['lon'] || "";
+    let latPlusLon = `${lat},${lon}`;
+    let units = req.query['u'] || 'f';
+
+    // This is great, we've recieved lat and long's and can hit the API like normal
+    if (location) {
+        if(isNaN(location)) {
+            return res.send({
+                success: false,
+                error: "Please check your URL and zip code and try again"
+            });
+        } else {
+            urlYahoo += `location=${location}&u=${units}&format=json`;
+        }
+        request.get(urlYahoo, null, null, (error, data, result)  => {
+            if (error) {
+                return res.send({
+                    success: false,
+                    msg: "Could not connect to 3rd party weather provider"
+                });            
+            } else {
+                console.log("Is what success feels like?");
+                console.log("conatenating the biz...")
+                let desiredLat = JSON.parse(data).location.lat;
+                let desiredLon = JSON.parse(data).location.long;
+                latPlusLon = `${desiredLat},${desiredLon}`; 
+                urlDarkSky += latPlusLon;
+                httpRequest.get(urlDarkSky, function (error, response, body) {
+                    if (error) {
+                        console.log(error);
+                        return res.send({
+                            success: false,
+                            error: "Couldn't connect to the the Forecast.IO API"
+                        });
+                    } else {
+                        res.send(JSON.parse(body));    
+                    }
+                }); 
+            }      
+        });
+    } else {
+        if (lat && lon) {
+            if (isNaN(lat) || isNaN(lon)) {
+                return res.send({
+                    success: false,
+                    error: "Please check your URL and Zip code before trying again"
+                });
+            } else {
+                urlDarkSky += latPlusLon;
+                httpRequest.get(urlDarkSky, function (error, response, body) {
+                    if (error) {
+                        console.log(error);
+                        return res.send({
+                            success: false,
+                            error: "Couldn't connect to the the Forecast.IO API"
+                        });
+                    } else {
+                        res.send(body);    
+                    }
+                });
+            }
+        }
+    }
+});
+// ######  END Retrieve Weather Data - Current and Hourly forecasts  ######
 
 
 // #################     Save Weather Data  ##########################
@@ -281,4 +356,26 @@ router.delete("/locations", (req, res) => {
 });
 // #################     Save Weather Data  ##########################
 
+
+
+function getZipCodeFromLatLon(zipcode) { 
+    
+    https.get('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY', (resp) => {
+    let data = '';
+
+    // A chunk of data has been recieved.
+    resp.on('data', (chunk) => {
+        data += chunk;
+    });
+
+    // The whole response has been received. Print out the result.
+    resp.on('end', () => {
+        console.log(JSON.parse(data).explanation);
+    });
+
+    }).on("error", (err) => {
+        console.log("Error: " + err.message);
+    });
+
+}
 module.exports = router;
