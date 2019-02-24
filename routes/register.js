@@ -112,7 +112,7 @@ router.post('/', [
                         });
                     })
                 })
-            .catch((err) => {
+            .catch(err => {
                 return res.send({
                     success: false,
                     error: "Unable to insert the verification token into the database"
