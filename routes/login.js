@@ -49,6 +49,9 @@ router.post('/', (req, res) => {
                     //package and send the results
                     res.json({
                         success: true,
+                        data: {
+                            username: row['username']
+                        },
                         msg: 'Authentication successful!',
 
                         token: token
