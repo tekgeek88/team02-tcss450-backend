@@ -17,8 +17,6 @@ router.post("/send", (req, res) => {
     let email = req.body['email'];
     let message = req.body['message'];
     let chatId = req.body['chatId'];
-
-
     if(!email || !message || !chatId) {
         res.send({
             success: false,
@@ -37,29 +35,21 @@ router.post("/send", (req, res) => {
         db.manyOrNone('SELECT * FROM Push_Token')
         .then(rows => {
             rows.forEach(element => {
-                console.log('Sending message to: ' + email);
                 msg_functions.sendToIndividual(element['token'], message, email);
             });
-            console.log('Yet success here');
             res.send({
-                success: true,
-                msg: message,
-                to: email
+                success: true
             });
         }).catch(err => {
-            console.log('There is an error here!');
             res.send({
-
                 success: false,
                 error: err,
-                desc: 'Sending message to: ' + email
             });
         })
     }).catch((err) => {
         res.send({
             success: false,
             error: err,
-            desc: 'SELECT * FROM Push_Token'
         });
     });
 });

@@ -4,6 +4,8 @@ let db = require('./sql_conn.js');
 //We use this create the SHA256 hash
 const crypto = require("crypto");
 
+let messaging = require('./pushy_services.js');
+
 /**
  * Method to get a salted hash.
  * We put this in its own method to keep consistency
@@ -15,5 +17,5 @@ function getHash(pw, salt) {
 }
 
 module.exports = { 
-    db, getHash
+    db, getHash, messaging
 };

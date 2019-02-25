@@ -22,6 +22,9 @@ app.use('/messaging', middleware.checkToken, require('./routes/messaging.js'));
 app.use('/connections', middleware.checkToken, require('./routes/connections.js'));
 
 
+//############   Test Routes   ############
+app.use('/hello', require('./routes/hello.js'));
+
 /*
  * Return HTML for the / end point. 
  * This is a nice location to document your web service API
