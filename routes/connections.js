@@ -289,7 +289,7 @@ router.get("/invite", (req, res) => {
     if (!username) {
         return res.send({
             success: false,
-            msg: "Username must not be blank"
+            message: "Username must not be blank"
         });
     }
 
@@ -301,7 +301,7 @@ router.get("/invite", (req, res) => {
         db.many('SELECT * FROM Locations WHERE MemberID = $1', params).then(
             function (data) {
                 res.send({
-                    status: 'success',                
+                    success: true,                
                     data: data,
                     message: 'Retrieved ALL Locations'
                 });
