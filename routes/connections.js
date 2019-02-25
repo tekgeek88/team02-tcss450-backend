@@ -18,7 +18,7 @@ router.get("/", (req, res) => {
     if (!username && !setTimeout && !sentFrom) {
         return res.send({
             success: false,
-            msg: "Your request was not understand"
+            message: "Your request was not understand"
         });
     }
 
