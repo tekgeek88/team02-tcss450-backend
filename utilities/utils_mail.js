@@ -64,24 +64,7 @@ async function sendVerificationEmail(firstName, email, request, token) {
 }
 
 
-function sendVerificationEmailByPost(firstName, email, request, token) {
 
-  let subject = "Account Verification Token";
-  
-  let message = '<html>' +
-                    '<body>' +
-                      '<h2>Hello ' + firstName + ', please click the link below to confirm your email address</h2>' +
-                      '<br>' + 
-                      '<br>' +
-                      '<form action = "http://' + request.headers.host + '/confirm" method = "POST">' +
-                          '<input type = "hidden" name="token" value="' + token.token + '"}">' +
-                          '<input type = "submit" value = "Confirm">' +
-                      '</form>' +
-                    '</body>' +
-                  '</html>';
-
-  sendEmail("no-reply@ourapp.com", email, subject, message);
-}
 async function sendPasswordEmail(email, newPassword) {
 
   let subject = "Temporary Password for Chatter";

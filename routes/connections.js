@@ -22,12 +22,21 @@ router.get("/", (req, res) => {
         });
     }
 
+
     if (username) {
         // Select the username from the Members table so that we can aquire the MemberID
         db.one('SELECT MemberID FROM Members WHERE Username=$1', [username]).then(row => {
             let params = [row['memberid']];
             // Fetch all of the contacts with mutual connections to the given username 
-            db.many('SELECT * FROM Contacts WHERE MemberId_A = $1 OR MemberId_B = $1', params).then(data => {
+            db.many(`SELECT memberid, firstname, lastname, username, C1.id, C1.memberid_a, C1.memberid_b, C1.verified
+                    FROM Members
+                    JOIN (SELECT id, memberid_a, memberid_b, verified FROM Contacts WHERE memberid_a = $1) as C1
+                    ON memberid_b = memberid
+                    UNION
+                    SELECT memberid, firstname, lastname, username, C2.id, C2.memberid_a, C2.memberid_b, C2.verified
+                    FROM Members
+                    JOIN (SELECT id, memberid_a, memberid_b, verified FROM Contacts WHERE memberid_b = $1) as C2
+                    ON memberid_a = memberid`, params).then(data => {
                 res.send({
                     status: 'success',                
                     data: data,
@@ -50,7 +59,15 @@ router.get("/", (req, res) => {
         db.one('SELECT MemberID FROM Members WHERE Username=$1', [sentTo]).then(row => {
             let params = [row['memberid']];
             console.log(params);
-            db.many('SELECT * FROM Contacts WHERE MemberId_B = $1', params).then(data => {
+            db.many(`SELECT memberid, firstname, lastname, username, C1.id, C1.memberid_a, C1.memberid_b, C1.verified
+                    FROM Members
+                    JOIN (SELECT id, memberid_a, memberid_b, verified FROM Contacts WHERE memberid_a = $1) as C1
+                    ON memberid_b = memberid
+                    UNION
+                    SELECT memberid, firstname, lastname, username, C2.id, C2.memberid_a, C2.memberid_b, C2.verified
+                    FROM Members
+                    JOIN (SELECT id, memberid_a, memberid_b, verified FROM Contacts WHERE memberid_b = $1) as C2
+                    ON memberid_a = memberid`, params).then(data => {
                 return res.send({
                         status: 'success',                
                         data: data,
@@ -157,7 +174,7 @@ router.put("/", (req, res) => {
 });// End router.put()
 
 
-// ########   Delete a forecast location   ########
+/** Remove a connection FROM userA to userB */
 router.delete("/", (req, res) => {
     res.type("application/json");
     
@@ -210,7 +227,7 @@ router.delete("/", (req, res) => {
     
 
 
-// ########   Retrieve Weather Data - Hourly forecasts  ########
+/** Confirm a connection BETWEEN userA to userB */
 router.get("/confirm", (req, res) => {
     res.type("application/json");
     
@@ -262,7 +279,7 @@ router.get("/confirm", (req, res) => {
 });
 
 
-// ########   Fetched saved weather data   ########
+/** Invite a connection FROM userA to offPlatformUser */
 router.get("/invite", (req, res) => {
     res.type("application/json");
 
