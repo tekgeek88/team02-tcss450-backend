@@ -18,11 +18,11 @@ router.post("/send", (req, res) => {
     let message = req.body['message'];
     let chatId = req.body['chatId'];
     if(!email || !message || !chatId) {
-        res.send({
-            success: false,
-            error: "email, message, or chatId not supplied"
+        return res.send({
+                success: false,
+                error: "email, message, or chatId not supplied"
         });
-        return;
+        
     }
     //add the message to the database
     let insert = `INSERT INTO Messages(ChatId, Message, MemberId)
@@ -37,19 +37,21 @@ router.post("/send", (req, res) => {
             rows.forEach(element => {
                 msg_functions.sendToIndividual(element['token'], message, email);
             });
-            res.send({
-                success: true
+            return res.send({
+                    success: true
             });
         }).catch(err => {
-            res.send({
-                success: false,
-                error: err,
+            console.log(err);
+            return res.send({
+                    success: false,
+                    error: err
             });
         })
     }).catch((err) => {
-        res.send({
-            success: false,
-            error: err,
+        console.log(err);
+        return res.send({
+                success: false,
+                error: err
         });
     });
 });
@@ -66,13 +68,13 @@ router.post("/getAll", (req, res) => {
                  ORDER BY Timestamp DESC`
     db.manyOrNone(query, [chatId])
     .then((rows) => {
-        res.send({
-            messages: rows
+        return res.send({
+                messages: rows
         })
     }).catch((err) => {
-        res.send({
-            success: false,
-            error: err
+        return res.send({
+                success: false,
+                error: err
         })
     });
 });
