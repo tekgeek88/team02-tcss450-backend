@@ -64,7 +64,7 @@ router.get("/", (req, res) => {
             db.many(`SELECT memberid, firstname, lastname, username, C2.id, C2.memberid_a, C2.memberid_b, C2.verified
                         FROM Members
                         JOIN (SELECT id, memberid_a, memberid_b, verified FROM Contacts WHERE memberid_b = $1) as C2
-                        ON memberid_a = memberid`, params).then(data => {
+                        ON memberid_a = memberid` , params).then(data => {
                 return res.send({
                         status: 'success',                
                         data: data,
@@ -91,10 +91,10 @@ router.get("/", (req, res) => {
         db.one('SELECT MemberID FROM Members WHERE Username=$1', [sentFrom]).then(row => {
             let params = [row['memberid']];
             console.log(params);
-            db.many(`SELECT memberid, firstname, lastname, username, C1.id, C1.memberid_a, C1.memberid_b, C1.verified
-                        FROM Members
-                        JOIN (SELECT id, memberid_a, memberid_b, verified FROM Contacts WHERE memberid_a = $1) as C1
-                        ON memberid_b = memberid, params`).then(data => {
+            db.many(`SELECT memberid, firstname, lastname, username, C2.id, C2.memberid_a, C2.memberid_b, C2.verified
+            FROM Members
+            JOIN (SELECT id, memberid_a, memberid_b, verified FROM Contacts WHERE memberid_a = 170) as C2
+            ON memberid_b = memberid`, params).then(data => {
                 res.send({
                     status: 'success',                
                     data: data,
@@ -117,6 +117,9 @@ router.get("/", (req, res) => {
         });
     }
 });
+
+
+
 
 
 /** Create a connection request from userA to userB */

@@ -78,7 +78,7 @@ router.post('/', (req, res) => {
             //If anything happened, it wasn't successful
             res.send({
                 success: false,
-                msg: "Account not found!"
+                message: "Account not found!"
             });
         });
     } else {
@@ -91,7 +91,7 @@ router.post('/', (req, res) => {
 
         res.send({
             success: false,
-            msg: 'Email and Password are required'
+            message: 'Email and Password are required'
         });
     }
 });

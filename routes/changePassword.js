@@ -33,7 +33,7 @@ router.post('/', (req, res) => {
             .then(() => {
                 return res.send({
                     success: true,
-                    msg: "Password changed"
+                    message: "Password changed"
                 });
 
 
@@ -43,7 +43,7 @@ router.post('/', (req, res) => {
                 res.send({
                     success: false,
                 
-                    error: err
+                    error: "Couldn't update member's password"
                     
                 });
             });
@@ -54,14 +54,14 @@ router.post('/', (req, res) => {
             //If anything happened, it wasn't successful
             res.send({
                 success: false,
-                msg: "Account not found!"
+                message: "Account not found!"
             });
         });
     } else {
         
         res.send({
             success: false,
-            msg: 'Email and Password are required'
+            message: 'Email and Password are required'
         });
     }
 });
