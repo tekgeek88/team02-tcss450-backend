@@ -96,7 +96,7 @@ router.get("/", (req, res) => {
             JOIN (SELECT id, memberid_a, memberid_b, verified FROM Contacts WHERE memberid_a = 170) as C2
             ON memberid_b = memberid`, params).then(data => {
                 res.send({
-                    status: 'success',                
+                    success: true,
                     data: data,
                     message: 'Retreived ALL contacts SENT FROM memberA!'
                 });
@@ -105,7 +105,7 @@ router.get("/", (req, res) => {
                 console.log("ERROR Retreiving ALL Contacts!" + err);
                 return res.send({
                     success: false,
-                    message: "User does not exist!"
+                    message: "Try sending some connection requests first!"
                 });
             });
         })
