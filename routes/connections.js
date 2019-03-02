@@ -47,7 +47,10 @@ router.get("/", (req, res) => {
             })
             .catch(function (err) {
                 console.log("ERROR Retreiving ALL Contacts!" + err);
-                return next(err);
+                return res.send({
+                    success: false,
+                    message: "No connections found!"
+                });
             });
         })
         .catch((err) => {
@@ -75,7 +78,7 @@ router.get("/", (req, res) => {
                 console.log("ERROR Retreiving ALL Contacts!" + err);
                 return res.send({
                     success: false,
-                    message: "User does not exist!"
+                    message: "No connection requests found!"
                 });
             });
         })
@@ -105,7 +108,7 @@ router.get("/", (req, res) => {
                 console.log("ERROR Retreiving ALL Contacts!" + err);
                 return res.send({
                     success: false,
-                    message: "Try sending some connection requests first!"
+                    message: "No connection requests set!"
                 });
             });
         })
@@ -152,7 +155,7 @@ router.put("/", (req, res) => {
                 console.log("ERROR: " + err);
                 return res.send({
                     success: false,
-                    error: "Could not add connection from memberA to memberB"
+                    message: "Could not add connection from memberA to memberB"
                 });
             })
         })
@@ -160,7 +163,7 @@ router.put("/", (req, res) => {
             console.log("Couldn't find MemberIdB");
             return res.send({
                 success: false,
-                error: 'Username not found'
+                message: 'Username not found'
             });
         })
     })
@@ -169,7 +172,7 @@ router.put("/", (req, res) => {
         console.log("Couldn't find MemberIdA");
         return res.send({
             success: false,
-            error: 'Username not found'
+            message: 'Username not found'
         });
     })
 
@@ -207,7 +210,7 @@ router.delete("/", (req, res) => {
                 console.log("ERROR: " + err);
                 return res.send({
                     success: false,
-                    error: "Could not DELETE connection between memberA and memberB"
+                    message: "Could not DELETE connection between memberA and memberB"
                 });
             });
         })
@@ -215,7 +218,7 @@ router.delete("/", (req, res) => {
             console.log("Couldn't find MemberIdB");
             return res.send({
                 success: false,
-                error: 'Username not found'
+                message: 'Username not found'
             });
         });
     })    
@@ -223,7 +226,7 @@ router.delete("/", (req, res) => {
         console.log("Couldn't find MemberIdB");
         return res.send({
             success: false,
-            error: 'Username not found'
+            message: 'Username not found'
         });
     });  
 });
@@ -259,7 +262,7 @@ router.get("/confirm", (req, res) => {
                 console.log("ERROR: " + err);
                 return res.send({
                     success: false,
-                    error: "Could not CONFIRM connection between memberA and memberB"
+                    message: "Could not CONFIRM connection between memberA and memberB"
                 });
             });
         })
@@ -267,7 +270,7 @@ router.get("/confirm", (req, res) => {
             console.log("Couldn't find MemberIdB");
             return res.send({
                 success: false,
-                error: 'Username not found'
+                message: 'Username not found'
             });
         });
     })    
@@ -275,7 +278,7 @@ router.get("/confirm", (req, res) => {
         console.log("Couldn't find MemberIdB");
         return res.send({
             success: false,
-            error: 'Username not found'
+            message: 'Username not found'
         });
     });
 });
@@ -306,7 +309,7 @@ router.get("/invite", (req, res) => {
                 // console.log("#####    END MAIL TRANSACTION    #####");
                 return res.send({
                     success: true,
-                    msg: "Invitation email sent"
+                    message: "Invitation email sent"
                 });
             })
             .catch(err =>{
@@ -324,7 +327,7 @@ router.get("/invite", (req, res) => {
             // Maybe we should upated instead?
             return res.send({
                     success: false,
-                    error: "A valid username is required to send emails!"
+                    message: "A valid username is required to send emails!"
                 });
         
         });
