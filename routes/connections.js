@@ -66,7 +66,7 @@ router.get("/", (req, res) => {
                         JOIN (SELECT id, memberid_a, memberid_b, verified FROM Contacts WHERE memberid_b = $1) as C2
                         ON memberid_a = memberid` , params).then(data => {
                 return res.send({
-                        status: 'success',                
+                        success: true,                
                         data: data,
                         message: 'Retreived ALL contacts SENT TO memberB!'
                 });
