@@ -32,12 +32,12 @@ router.get("/", (req, res) => {
             // Fetch all of the contacts with mutual connections to the given username 
             db.many(`SELECT memberid, firstname, lastname, username, C1.id, C1.memberid_a, C1.memberid_b, C1.verified
                     FROM Members
-                    JOIN (SELECT id, memberid_a, memberid_b, verified FROM Contacts WHERE memberid_a = $1) as C1
+                    JOIN (SELECT id, memberid_a, memberid_b, verified FROM Contacts WHERE memberid_a = $1 AND verified = 1) as C1
                     ON memberid_b = memberid
                     UNION
                     SELECT memberid, firstname, lastname, username, C2.id, C2.memberid_a, C2.memberid_b, C2.verified
                     FROM Members
-                    JOIN (SELECT id, memberid_a, memberid_b, verified FROM Contacts WHERE memberid_b = $1) as C2
+                    JOIN (SELECT id, memberid_a, memberid_b, verified FROM Contacts WHERE memberid_b = $1 AND verified = 1) as C2
                     ON memberid_a = memberid`, params).then(data => {
                 res.send({
                     success: true,                
@@ -66,7 +66,7 @@ router.get("/", (req, res) => {
             console.log(params);
             db.many(`SELECT memberid, firstname, lastname, username, C2.id, C2.memberid_a, C2.memberid_b, C2.verified
                         FROM Members
-                        JOIN (SELECT id, memberid_a, memberid_b, verified FROM Contacts WHERE memberid_b = $1) as C2
+                        JOIN (SELECT id, memberid_a, memberid_b, verified FROM Contacts WHERE memberid_b = $1 AND verified = 0) as C2
                         ON memberid_a = memberid` , params).then(data => {
                 return res.send({
                         success: true,                
@@ -96,7 +96,7 @@ router.get("/", (req, res) => {
             console.log(params);
             db.many(`SELECT memberid, firstname, lastname, username, C2.id, C2.memberid_a, C2.memberid_b, C2.verified
             FROM Members
-            JOIN (SELECT id, memberid_a, memberid_b, verified FROM Contacts WHERE memberid_a = 170) as C2
+            JOIN (SELECT id, memberid_a, memberid_b, verified FROM Contacts WHERE memberid_a = $1 AND verified = 0) as C2
             ON memberid_b = memberid`, params).then(data => {
                 res.send({
                     success: true,
