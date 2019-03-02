@@ -53,7 +53,7 @@ router.get("/", (req, res) => {
         .catch((err) => {
             res.send({
                 success: false,
-                error: "User does not exist!"
+                message: "User does not exist!"
             });
         });
     } else if (sentTo) {
@@ -75,14 +75,14 @@ router.get("/", (req, res) => {
                 console.log("ERROR Retreiving ALL Contacts!" + err);
                 return res.send({
                     success: false,
-                    error: "User does not exist!"
+                    message: "User does not exist!"
                 });
             });
         })
         .catch((err) => {
             return res.send({
                     success: false,
-                    error: "User does not exist!"
+                    message: "User does not exist!"
             });
         });
     } else if (sentFrom) {
@@ -105,14 +105,14 @@ router.get("/", (req, res) => {
                 console.log("ERROR Retreiving ALL Contacts!" + err);
                 return res.send({
                     success: false,
-                    error: "User does not exist!"
+                    message: "User does not exist!"
                 });
             });
         })
         .catch((err) => {
             return res.send({
                     success: false,
-                    error: "User does not exist!"
+                    message: "User does not exist!"
             });
         });
     }
