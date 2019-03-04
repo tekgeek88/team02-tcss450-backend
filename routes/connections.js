@@ -105,10 +105,10 @@ router.get("/", (req, res) => {
                 });
             })
             .catch(function (err) {
-                console.log("ERROR Retreiving ALL Contacts!" + err);
+                console.log("ERROR Retrieving ALL connection requests FROM: " + sentFrom + "\n" + err);
                 return res.send({
                     success: false,
-                    message: "No connection requests set!"
+                    message: "No connection requests sent by you!"
                 });
             });
         })
