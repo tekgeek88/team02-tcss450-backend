@@ -103,11 +103,9 @@ router.get("/forecast/hourly", (req, res) => {
             if (error) {
                 return res.send({
                     success: false,
-                    msg: "Could not connect to 3rd party weather provider"
+                    message: "Could not connect to 3rd party weather provider"
                 });            
             } else {
-                console.log("Is what success feels like?");
-                console.log("conatenating the biz...")
                 let desiredLat = JSON.parse(data).location.lat;
                 let desiredLon = JSON.parse(data).location.long;
                 latPlusLon = `${desiredLat},${desiredLon}`; 
