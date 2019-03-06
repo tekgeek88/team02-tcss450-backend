@@ -140,7 +140,7 @@ router.get("/forecast/hourly", (req, res) => {
                             error: "Couldn't connect to the the Forecast.IO API"
                         });
                     } else {
-                        res.send(body);    
+                        return res.send(body);    
                     }
                 });
             }
