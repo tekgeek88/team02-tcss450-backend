@@ -201,7 +201,7 @@ router.delete("/", (req, res) => {
         db.one('SELECT MemberID FROM Members WHERE Username=$1', [sentToUsername]).then(row => {
             let memberIdB = row['memberid'];
             console.log("removing: " + memberIdA, memberIdB);
-            db.one("DELETE FROM Contacts WHERE ((heroku lMemberID_A=$1) AND (MemberID_B=$2))RETURNING *", [memberIdA, memberIdB]).then(nothing => {
+            db.one("DELETE FROM Contacts WHERE ((heroku MemberID_A=$1) AND (MemberID_B=$2))RETURNING *", [memberIdA, memberIdB]).then(nothing => {
                 return res.send({
                     success: true,
                     message: 'Connection has been REMOVED!'
