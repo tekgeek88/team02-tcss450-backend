@@ -15,7 +15,6 @@ router.get("/", (req, res) => {
     let username = req.query['username'];
     let sentTo = req.query['sent_to'];
     let sentFrom = req.query['sent_from'];
-    let isNotFriends = req.query['is_friends'];
 
     // Inform the user if they didn't enter username or location
     if (!username && !sentTo && !sentFrom) {
@@ -25,13 +24,9 @@ router.get("/", (req, res) => {
         });
     }
 
-
     if (username) {
         // Select the username from the Members table so that we can aquire the MemberID
-        let query = "";
-        if (isNotFriends) {
-            console.log("isFriends = 1");
-            query = `SELECT memberid, firstname, lastname, username, C1.id, C1.memberid_a, C1.memberid_b, C1.verified
+        let query = `SELECT memberid, firstname, lastname, username, C1.id, C1.memberid_a, C1.memberid_b, C1.verified
                     FROM Members
                     JOIN (SELECT id, memberid_a, memberid_b, verified
                         FROM Contacts
@@ -43,24 +38,6 @@ router.get("/", (req, res) => {
                     JOIN (SELECT id, memberid_a, memberid_b, verified
                         FROM Contacts WHERE memberid_b = $1 AND verified = 1) as C2
                     ON memberid_a = memberid`;
-        } else {
-            console.log("isFriends = 0");
-            query = `SELECT sub2.memberid, firstname, lastname, username, verification AS verified
-            FROM Members
-            JOIN (SELECT sub.memberid FROM (
-                    SELECT M1.memberid FROM Members M1
-                    EXCEPT
-                    SELECT C1.memberid_b FROM Contacts C1 WHERE C1.memberid_a = $1
-                    INTERSECT
-                    SELECT M2.memberid FROM Members M2
-                    EXCEPT
-                    SELECT C2.memberid_a FROM Contacts C2 WHERE C2.memberid_b = $1
-                    ) AS sub
-                    WHERE memberid != $1
-                ORDER BY memberid ASC) AS sub2
-            ON sub2.memberid = Members.memberid
-            WHERE verification = 1;`
-        }
 
         db.one('SELECT MemberID FROM Members WHERE Username=$1', [username]).then(row => {
             let params = [row['memberid']];
@@ -224,7 +201,7 @@ router.delete("/", (req, res) => {
         db.one('SELECT MemberID FROM Members WHERE Username=$1', [sentToUsername]).then(row => {
             let memberIdB = row['memberid'];
             console.log("removing: " + memberIdA, memberIdB);
-            db.one("DELETE FROM Contacts WHERE ((MemberID_A=$1) AND (MemberID_B=$2)) OR ((MemberID_A=$2) AND (MemberID_B=$1))RETURNING *", [memberIdA, memberIdB]).then(nothing => {
+            db.one("DELETE FROM Contacts WHERE ((heroku lMemberID_A=$1) AND (MemberID_B=$2))RETURNING *", [memberIdA, memberIdB]).then(nothing => {
                 return res.send({
                     success: true,
                     message: 'Connection has been REMOVED!'

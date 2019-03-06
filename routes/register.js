@@ -101,14 +101,14 @@ router.post('/', [
                         // console.log("#####    END MAIL TRANSACTION    #####");
                         return res.send({
                             success: true,
-                            msg: "Verification email sent"
+                            message: "Verification email sent"
                         });
                     })
                     .catch(err =>{
                         return res.send({
                             success: false,
                             error: err['response'],
-                            msg: "Unable to send verification email"
+                            message: "Unable to send verification email"
                         });
                     })
                 })
