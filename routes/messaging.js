@@ -16,11 +16,12 @@ let msg_functions = require('../utilities/utils').messaging;
 router.post("/send", (req, res) => {
     let email = req.body['email'];
     let message = req.body['message'];
-    let chatId = req.body['chatId'];
+    let chatId = req.body['chat_id'];
     if(!email || !message || !chatId) {
+        console.log("Email: " + email + " message: " + message + " chat_id: " + chatId);
         return res.send({
                 success: false,
-                error: "email, message, or chatId not supplied"
+                message: "email, message, or chatId not supplied"
         });
         
     }
