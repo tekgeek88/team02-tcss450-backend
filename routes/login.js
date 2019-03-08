@@ -52,7 +52,7 @@ router.post('/', (req, res) => {
                         data: {
                             username: row['username']
                         },
-                        msg: 'Authentication successful!',
+                        message: 'Authentication successful!',
 
                         token: token
                     });
@@ -60,7 +60,7 @@ router.post('/', (req, res) => {
 
                     res.send({
                     success: false ,
-                    msg: "Email verification required!"
+                    message: "Email verification required!"
                     });
 
                 }
@@ -68,7 +68,7 @@ router.post('/', (req, res) => {
                 //credentials do not match
                 res.send({
                     success: false,
-                    msg: "Credentials do not match!" 
+                    message: "Credentials do not match!" 
 
                 });
             }

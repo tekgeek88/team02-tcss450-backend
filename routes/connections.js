@@ -141,11 +141,15 @@ router.put("/", (req, res) => {
         });
     }
 
+    // Get memberID for memberA
     db.one('SELECT MemberID FROM Members WHERE Username=$1', [sentFromUsername]).then(row => {
         let memberIdA = row['memberid'];
+        // Get memberID for memberB
         db.one('SELECT MemberID FROM Members WHERE Username=$1', [sentToUsername]).then(row => {
             let memberIdB = row['memberid'];
             console.log("inserting: " + memberIdA, memberIdB);
+            
+            // Insert into Contacts Member A friended Member B
             db.none("INSERT INTO Contacts (MemberID_A, MemberID_B) VALUES ($1, $2)", [memberIdA, memberIdB]).then(() => {
                 return res.send({
                     success: true,
