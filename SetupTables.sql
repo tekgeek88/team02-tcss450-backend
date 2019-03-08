@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS Members;
 CREATE TABLE Members (MemberID SERIAL PRIMARY KEY,
                       FirstName VARCHAR(255) NOT NULL,
-		                  LastName VARCHAR(255) NOT NULL,
+	                  LastName VARCHAR(255) NOT NULL,
                       Username VARCHAR(255) NOT NULL UNIQUE,
                       Email VARCHAR(255) NOT NULL UNIQUE,
                       Password VARCHAR(255) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE ChatMembers (ChatID INT NOT NULL,
 );
 
 DROP TABLE IF EXISTS Messages;
-CREATE TABLE Messages (PrimaryKey SERIAL PRIMARY KEY,
+CREATE TABLE Messages (MessageID SERIAL PRIMARY KEY,
                        ChatID INT,
                        Message VARCHAR(255),
                        MemberID INT,
