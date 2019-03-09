@@ -43,7 +43,7 @@ router.get("/", (req, res) => {
             let params = [row['memberid']];
             // Fetch all of the contacts with mutual connections to the given username 
             db.many(query, params).then(data => {
-                res.send({
+                return res.send({
                     success: true,                
                     data: data,
                     message: 'Retreived ALL contacts'
@@ -53,14 +53,14 @@ router.get("/", (req, res) => {
                 console.log("ERROR Retreiving ALL Contacts!" + err);
                 return res.send({
                     success: false,
-                    message: "No connections found!"
+                    message: "Failed to retrieve all connections for " + username
                 });
             });
         })
         .catch((err) => {
             res.send({
                 success: false,
-                message: "User does not exist!"
+                message: username + " does not exist!"
             });
         });
     } else if (sentTo) {
@@ -82,14 +82,14 @@ router.get("/", (req, res) => {
                 console.log("ERROR Retreiving ALL Contacts!" + err);
                 return res.send({
                     success: false,
-                    message: "No connection requests found!"
+                    message: "ERROR Retrieving ALL contacts SENT TO memberB!"
                 });
             });
         })
         .catch((err) => {
             return res.send({
                     success: false,
-                    message: "User does not exist!"
+                    message: sentTo + " does not exist!"
             });
         });
     } else if (sentFrom) {
@@ -112,14 +112,14 @@ router.get("/", (req, res) => {
                 console.log("ERROR Retrieving ALL connection requests FROM: " + sentFrom + "\n" + err);
                 return res.send({
                     success: false,
-                    message: "No connection requests sent by you!"
+                    message: "ERROR Retrieving ALL connection requests FROM: " + sentFrom
                 });
             });
         })
         .catch((err) => {
             return res.send({
                     success: false,
-                    message: "User does not exist!"
+                    message: sentFrom  + " User does not exist!"
             });
         });
     }
@@ -148,7 +148,6 @@ router.put("/", (req, res) => {
         db.one('SELECT MemberID FROM Members WHERE Username=$1', [sentToUsername]).then(row => {
             let memberIdB = row['memberid'];
             console.log("inserting: " + memberIdA, memberIdB);
-            
             // Insert into Contacts Member A friended Member B
             db.none("INSERT INTO Contacts (MemberID_A, MemberID_B) VALUES ($1, $2)", [memberIdA, memberIdB]).then(() => {
                 return res.send({
@@ -358,41 +357,64 @@ router.get("/search", (req, res) => {
     }
 
     // Select all of the users who are NOT friends with the given user
-    // Search for users by firstname, lastname, username, or email
-    let query = `SELECT (Search.memberid, Search.firstname, Search.lastname, Search.username, Search.email)
-    FROM
-       (SELECT (Members.memberid, Members.firstname, Members.lastname, Members.username, Members.email)
-        FROM Members
-        JOIN
-          (SELECT (sub2.memberid, firstname, lastname, username, verification) AS verified
-          FROM Members
-          JOIN (SELECT sub.memberid FROM (
-                  SELECT M1.memberid FROM Members M1
-                  EXCEPT
-                  SELECT C1.memberid_b FROM Contacts C1 WHERE C1.memberid_a = $1
-                  INTERSECT
-                  SELECT M2.memberid FROM Members M2
-                  EXCEPT
-                  SELECT C2.memberid_a FROM Contacts C2 WHERE C2.memberid_b = $1
-                  ) AS sub
-                  WHERE memberid != $1
-              ORDER BY memberid ASC) AS sub2
-          ON sub2.memberid = Members.memberid
-          WHERE verification = 1) AS Mems
-        ON Mems.memberid = Members.memberid) as Search
-    WHERE LOWER(Search.firstname) LIKE LOWER('$2%')`;
+    let query = `SELECT Search.memberid, Search.firstname, Search.lastname, Search.username, Search.email
+                    FROM
+                    (SELECT Members.memberid, Members.firstname, Members.lastname, Members.username, Members.email
+                        FROM Members
+                        JOIN
+                        (SELECT sub2.memberid, firstname, lastname, username, verification AS verified
+                        FROM Members
+                        JOIN (SELECT sub.memberid FROM (
+                                SELECT M1.memberid FROM Members M1
+                                EXCEPT
+                                SELECT C1.memberid_b FROM Contacts C1 WHERE C1.memberid_a = $1
+                                INTERSECT
+                                SELECT M2.memberid FROM Members M2
+                                EXCEPT
+                                SELECT C2.memberid_a FROM Contacts C2 WHERE C2.memberid_b = $1
+                                ) AS sub
+                                WHERE memberid != $1
+                            ORDER BY memberid ASC) AS sub2
+                        ON sub2.memberid = Members.memberid
+                        WHERE verification = 1) AS Mems
+                        ON Mems.memberid = Members.memberid) as Search
+                    WHERE LOWER(Search.email) LIKE LOWER('tek%')`
     
 
-    if (firstname) {
-        db.one('SELECT MemberID FROM Members WHERE Username=$1', [user]).then(row => {
-            let params = [row['memberid'], firstname];
-            console.log(params);
-            console.log("user: " + user + " firstname: " + firstname);
+    if (username) {
+        db.one('SELECT MemberID FROM Members WHERE Username=$1', [username]).then(row => {
+            let params = [row['memberid']];
             db.many(query, params).then(data => {
+                // At this point we have
+
+
+            })
+            .catch(function (err) {
+                console.log("ERROR there are no more friends to make" + err);
+                return res.send({
+                    success: false,
+                    message: "No connections found!"
+                });
+            });
+        })
+        .catch((err) => {
+            res.send({
+                success: false,
+                message: "User does not exist!"
+            });
+        });
+    } else if (email) {
+        console.log("Searching connections for: " + user + " emails beginning with: " + email);
+        db.one('SELECT MemberID FROM Members WHERE Username=$1', [user]).then(row => {
+            let params = [row['memberid']];
+            
+            db.many(query, params).then(data => {
+                console.log("we have results!");
+                console.log(row);
                 return res.send({
                     success: true,
-                    data: data,
-                    message: "Returning all users emails like " + email + "!"
+                    data: row,
+                    message: "Retrieved " + data.length + " result(s)"
                 });
             })
             .catch(function (err) {
@@ -404,7 +426,7 @@ router.get("/search", (req, res) => {
             });
         })
         .catch((err) => {
-            res.send({
+            return res.send({
                 success: false,
                 message: "User does not exist!"
             });
