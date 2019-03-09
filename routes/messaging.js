@@ -16,11 +16,12 @@ let msg_functions = require('../utilities/utils').messaging;
 router.post("/send", (req, res) => {
     let email = req.body['email'];
     let message = req.body['message'];
-    let chatId = req.body['chatId'];
+    let chatId = req.body['chat_id'];
     if(!email || !message || !chatId) {
+        console.log("Email: " + email + " message: " + message + " chat_id: " + chatId);
         return res.send({
                 success: false,
-                error: "email, message, or chatId not supplied"
+                message: "email, message, or chatId not supplied"
         });
         
     }
@@ -58,9 +59,19 @@ router.post("/send", (req, res) => {
 
 //Get all of the messages from a chat session with id chatid
 router.post("/getAll", (req, res) => {
-    let chatId = req.body['chatId'];
+    res.type("application/json");
+
+    let chatId = req.body['chat_id'];
+    console.log("chat_id: " + chatId);
+    if (!chatId) {
+        console.log("ERROR: CHAT_ID is required for retrieving the messages of a chat room!" );
+        return res.send({
+                success: false,
+                message: "CHAT_ID is required for retrieving the messages of a chat room!"
+        })
+    }
     
-    let query = `SELECT Members.Email, Messages.Message, 
+    let query = `SELECT Messages.chatid, Members.username, Members.email, Messages.message, 
                  to_char(Messages.Timestamp AT TIME ZONE 'PDT', 'YYYY-MM-DD HH24:MI:SS.US' ) AS Timestamp
                  FROM Messages
                  INNER JOIN Members ON Messages.MemberId=Members.MemberId
@@ -68,13 +79,23 @@ router.post("/getAll", (req, res) => {
                  ORDER BY Timestamp DESC`
     db.manyOrNone(query, [chatId])
     .then((rows) => {
-        return res.send({
-                messages: rows
-        })
+        if (!rows.length) {
+            return res.send({
+                success: false,
+                message: "Unable to find any messages for the given CHAT_ID"
+            });
+        } else {
+            return res.send({
+                success: true,
+                data: rows,
+                message: "Returning all messages for the given CHAT_ID"
+            });
+        }
     }).catch((err) => {
+        console.log("ERROR: Couldn't return many or none of the messages for the given CHAT_ID\n" + err );
         return res.send({
                 success: false,
-                error: err
+                message: "Couldn't return many or none of the messages for the given CHAT_ID"
         })
     });
 });

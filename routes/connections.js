@@ -352,7 +352,7 @@ router.get("/search", (req, res) => {
     if (!user) {
         return res.send({
             success: false,
-            message: "A user context is required fir all searches!"
+            message: "A user context is required for all searches!"
         });
     }
 
@@ -416,14 +416,12 @@ router.get("/search", (req, res) => {
                     data: row,
                     message: "Retrieved " + data.length + " result(s)"
                 });
-
-
             })
             .catch(function (err) {
-                console.log("ERROR there are no more friends to make" + err);
+                console.log("No users found with that email!\n" + err);
                 return res.send({
                     success: false,
-                    message: "No connections found!"
+                    message: "No users found with that enail!"
                 });
             });
         })
