@@ -20,6 +20,7 @@ app.use('/weather', middleware.checkToken, require('./routes/weather.js'));
 app.use('/pushy', middleware.checkToken, require('./routes/pushy.js'));
 app.use('/messaging', middleware.checkToken, require('./routes/messaging.js'));
 app.use('/connections', middleware.checkToken, require('./routes/connections.js'));
+app.use('/recentChats', middleware.checkToken, require('./routes/recentChats.js'));
 
 
 //############   Test Routes   ############
