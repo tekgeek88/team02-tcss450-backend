@@ -357,7 +357,7 @@ router.get("/search", (req, res) => {
     }
 
     if (username) {
-        db.one('SELECT MemberID FROM Members WHERE Username=$1', [username]).then(row => {
+        db.one('SELECT MemberID FROM Members WHERE Username=$1', [user]).then(row => {
             let memberid = row['memberid']; 
             let params = [memberid, username];
             // Select all of the users who are NOT friends with the given user
@@ -382,7 +382,7 @@ router.get("/search", (req, res) => {
                                 ON sub2.memberid = Members.memberid
                                 WHERE verification = 1) AS Mems
                                 ON Mems.memberid = Members.memberid) as Search
-                            WHERE LOWER(Search.email) LIKE LOWER('${email}%')`;
+                            WHERE LOWER(Search.username) LIKE LOWER('${username}%')`;
 
             db.many(query, params).then(data => {
                 return res.send({
