@@ -4,12 +4,13 @@ var Pushy = require('pushy');
 var pushyAPI = new Pushy(process.env.PUSHY_API_KEY);
 
 //use to send message to all clients registered to a Topoic 
-function sendToTopic(topic, msg, from) {
+function sendToTopic(topic, msg, from, chatId) {
     //build the message for FCM to send
     var data = {
         "type": "topic_msg",
         "sender": from,
         "message": msg,
+        "chat_id": chatId
     };
 
     console.log(data);
@@ -30,13 +31,14 @@ function sendToTopic(topic, msg, from) {
 }
 
 //use to send message to a specific client by the token
-function sendToIndividual(token, msg, from) {
+function sendToIndividual(token, msg, from, chatId) {
 
     //build the message for FCM to send
     var data = {
         "type": "msg",
         "sender": from,
         "message": msg,
+        "chat_id": chatId
     };
 
     console.log(data);
