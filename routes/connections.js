@@ -293,11 +293,10 @@ router.get("/invite", (req, res) => {
     res.type("application/json");
 
     let fromUsername = req.query['from_username'];
-    let toFirstname = req.query['to_firstname'];
     let toEmail = req.query['to_email'];
 
     // Inform the user if they didn't enter username or location
-    if (!fromUsername && !toFirstname && !toEmail) {
+    if (!fromUsername && !toEmail) {
         return res.send({
             success: false,
             message: "Username, firstname, and email are ALL required!"
@@ -306,7 +305,7 @@ router.get("/invite", (req, res) => {
         // Select the username from the Members table so that we can aquire the MemberID
         db.one('SELECT Firstname FROM Members WHERE Username=$1', [fromUsername]).then(row => {
             let fromFirstName = [row['firstname']];
-            sendInvitationEmail(toFirstname, toEmail, fromFirstName)
+            sendInvitationEmail(toEmail, fromFirstName)
             .then(result => {
                 // console.log("#####    BEGIN MAIL TRANSACTION    #####");
                 console.log(result);
@@ -356,36 +355,40 @@ router.get("/search", (req, res) => {
         });
     }
 
-    // Select all of the users who are NOT friends with the given user
-    let query = `SELECT Search.memberid, Search.firstname, Search.lastname, Search.username, Search.email
-                    FROM
-                    (SELECT Members.memberid, Members.firstname, Members.lastname, Members.username, Members.email
-                        FROM Members
-                        JOIN
-                        (SELECT sub2.memberid, firstname, lastname, username, verification AS verified
-                        FROM Members
-                        JOIN (SELECT sub.memberid FROM (
-                                SELECT M1.memberid FROM Members M1
-                                EXCEPT
-                                SELECT C1.memberid_b FROM Contacts C1 WHERE C1.memberid_a = $1
-                                INTERSECT
-                                SELECT M2.memberid FROM Members M2
-                                EXCEPT
-                                SELECT C2.memberid_a FROM Contacts C2 WHERE C2.memberid_b = $1
-                                ) AS sub
-                                WHERE memberid != $1
-                            ORDER BY memberid ASC) AS sub2
-                        ON sub2.memberid = Members.memberid
-                        WHERE verification = 1) AS Mems
-                        ON Mems.memberid = Members.memberid) as Search
-                    WHERE LOWER(Search.email) LIKE LOWER('tek%')`
-    
-
     if (username) {
-        db.one('SELECT MemberID FROM Members WHERE Username=$1', [username]).then(row => {
-            let params = [row['memberid']];
+        db.one('SELECT MemberID FROM Members WHERE Username=$1', [user]).then(row => {
+            let memberid = row['memberid']; 
+            let params = [memberid, username];
+            // Select all of the users who are NOT friends with the given user
+            let query = `SELECT Search.memberid, Search.firstname, Search.lastname, Search.username, Search.email
+                            FROM
+                            (SELECT Members.memberid, Members.firstname, Members.lastname, Members.username, Members.email
+                                FROM Members
+                                JOIN
+                                (SELECT sub2.memberid, firstname, lastname, username, verification AS verified
+                                FROM Members
+                                JOIN (SELECT sub.memberid FROM (
+                                        SELECT M1.memberid FROM Members M1
+                                        EXCEPT
+                                        SELECT C1.memberid_b FROM Contacts C1 WHERE C1.memberid_a = ${memberid}
+                                        INTERSECT
+                                        SELECT M2.memberid FROM Members M2
+                                        EXCEPT
+                                        SELECT C2.memberid_a FROM Contacts C2 WHERE C2.memberid_b = ${memberid}
+                                        ) AS sub
+                                        WHERE memberid != ${memberid}
+                                    ORDER BY memberid ASC) AS sub2
+                                ON sub2.memberid = Members.memberid
+                                WHERE verification = 1) AS Mems
+                                ON Mems.memberid = Members.memberid) as Search
+                            WHERE LOWER(Search.username) LIKE LOWER('${username}%')`;
+
             db.many(query, params).then(data => {
-                // At this point we have
+                return res.send({
+                    success: true,
+                    data: data,
+                    message: "We found " + data.length + " results(s)"
+                });
 
 
             })
@@ -398,40 +401,173 @@ router.get("/search", (req, res) => {
             });
         })
         .catch((err) => {
-            res.send({
+            return res.send({
                 success: false,
-                message: "User does not exist!"
+                message: "Username: User does not exist!"
             });
         });
     } else if (email) {
-        console.log("Searching connections for: " + user + " emails beginning with: " + email);
+        console.log("Searching connections for: " + user + " where emails begin with: " + email);
         db.one('SELECT MemberID FROM Members WHERE Username=$1', [user]).then(row => {
-            let params = [row['memberid']];
-            
+            let memberid = row['memberid']; 
+            let params = [memberid, username];
+            console.log("Params: " + params);
+            // Select all of the users who are NOT friends with the given user
+            let query = `SELECT Search.memberid, Search.firstname, Search.lastname, Search.username, Search.email
+                            FROM
+                            (SELECT Members.memberid, Members.firstname, Members.lastname, Members.username, Members.email
+                                FROM Members
+                                JOIN
+                                (SELECT sub2.memberid, firstname, lastname, username, verification AS verified
+                                FROM Members
+                                JOIN (SELECT sub.memberid FROM (
+                                        SELECT M1.memberid FROM Members M1
+                                        EXCEPT
+                                        SELECT C1.memberid_b FROM Contacts C1 WHERE C1.memberid_a = ${memberid}
+                                        INTERSECT
+                                        SELECT M2.memberid FROM Members M2
+                                        EXCEPT
+                                        SELECT C2.memberid_a FROM Contacts C2 WHERE C2.memberid_b = ${memberid}
+                                        ) AS sub
+                                        WHERE memberid != ${memberid}
+                                    ORDER BY memberid ASC) AS sub2
+                                ON sub2.memberid = Members.memberid
+                                WHERE verification = 1) AS Mems
+                                ON Mems.memberid = Members.memberid) as Search
+                            WHERE LOWER(Search.email) LIKE LOWER('${email}%')`;
+
             db.many(query, params).then(data => {
-                console.log("we have results!");
-                console.log(row);
                 return res.send({
                     success: true,
-                    data: row,
+                    data: data,
                     message: "Retrieved " + data.length + " result(s)"
                 });
             })
             .catch(function (err) {
-                console.log("No users found with that email!\n" + err);
+                console.log(user + " does not exist!" + "\n" + err);
                 return res.send({
                     success: false,
-                    message: "No users found with that enail!"
+                    message: "Sorry, no friends with that email address were found"
                 });
             });
         })
         .catch((err) => {
             return res.send({
                 success: false,
-                message: "User does not exist!"
+                message: user + " does not exist!"
             });
         });
+    } else if (firstname) {
+        console.log("Searching connections for: " + user + " where firstnames begin with: " + firstname);
+        db.one('SELECT MemberID FROM Members WHERE Username=$1', [user]).then(row => {
+            let memberid = row['memberid']; 
+            let params = [memberid, firstname];
+            console.log("Params: " + params);
+            // Select all of the users who are NOT friends with the given user
+            let query = `SELECT Search.memberid, Search.firstname, Search.lastname, Search.username, Search.email
+                            FROM
+                            (SELECT Members.memberid, Members.firstname, Members.lastname, Members.username, Members.email
+                                FROM Members
+                                JOIN
+                                (SELECT sub2.memberid, firstname, lastname, username, verification AS verified
+                                FROM Members
+                                JOIN (SELECT sub.memberid FROM (
+                                        SELECT M1.memberid FROM Members M1
+                                        EXCEPT
+                                        SELECT C1.memberid_b FROM Contacts C1 WHERE C1.memberid_a = ${memberid}
+                                        INTERSECT
+                                        SELECT M2.memberid FROM Members M2
+                                        EXCEPT
+                                        SELECT C2.memberid_a FROM Contacts C2 WHERE C2.memberid_b = ${memberid}
+                                        ) AS sub
+                                        WHERE memberid != ${memberid}
+                                    ORDER BY memberid ASC) AS sub2
+                                ON sub2.memberid = Members.memberid
+                                WHERE verification = 1) AS Mems
+                                ON Mems.memberid = Members.memberid) as Search
+                            WHERE LOWER(Search.firstname) LIKE LOWER('${firstname}%')`;
+
+                            console.log("Query: \n\n" + query);
+            db.many(query, params).then(data => {
+                return res.send({
+                    success: true,
+                    data: data,
+                    message: "Retrieved " + data.length + " result(s)"
+                });
+            })
+            .catch(function (err) {
+                console.log("Sorry, no friends with the firstname " + firstname + "  were found");
+                return res.send({
+                    success: false,
+                    message: "Sorry, no friends with the firstname " + firstname + "  were found"
+                });
+            });
+        })
+        .catch((err) => {
+            return res.send({
+                success: false,
+                message: user + " does not exist!"
+            });
+        });
+    } else if (lastname) {
+        console.log("Searching connections for: " + user + " where lastnames begin with: " + lastname);
+        db.one('SELECT MemberID FROM Members WHERE Username=$1', [user]).then(row => {
+            let memberid = row['memberid']; 
+            let params = [memberid, lastname];
+            console.log("Params: " + params);
+            // Select all of the users who are NOT friends with the given user
+            let query = `SELECT Search.memberid, Search.firstname, Search.lastname, Search.username, Search.email
+                            FROM
+                            (SELECT Members.memberid, Members.firstname, Members.lastname, Members.username, Members.email
+                                FROM Members
+                                JOIN
+                                (SELECT sub2.memberid, firstname, lastname, username, verification AS verified
+                                FROM Members
+                                JOIN (SELECT sub.memberid FROM (
+                                        SELECT M1.memberid FROM Members M1
+                                        EXCEPT
+                                        SELECT C1.memberid_b FROM Contacts C1 WHERE C1.memberid_a = ${memberid}
+                                        INTERSECT
+                                        SELECT M2.memberid FROM Members M2
+                                        EXCEPT
+                                        SELECT C2.memberid_a FROM Contacts C2 WHERE C2.memberid_b = ${memberid}
+                                        ) AS sub
+                                        WHERE memberid != ${memberid}
+                                    ORDER BY memberid ASC) AS sub2
+                                ON sub2.memberid = Members.memberid
+                                WHERE verification = 1) AS Mems
+                                ON Mems.memberid = Members.memberid) as Search
+                            WHERE LOWER(Search.lastname) LIKE LOWER('${lastname}%')`;
+
+                            console.log("Query: \n\n" + query);
+            db.many(query, params).then(data => {
+                return res.send({
+                    success: true,
+                    data: data,
+                    message: "Retrieved " + data.length + " result(s)"
+                });
+            })
+            .catch(function (err) {
+                console.log("Sorry, no friends with the lastname " + lastname + "  were found");
+                return res.send({
+                    success: false,
+                    message: "Sorry, no friends with the lastname " + lastname + "  were found"
+                });
+            });
+        })
+        .catch((err) => {
+            return res.send({
+                success: false,
+                message: user + " does not exist!"
+            });
+        });
+    } else {
+        return res.send({
+            success: false,
+            message: "Your input was not understood!"
+        });
     }
+
 });
 
 
