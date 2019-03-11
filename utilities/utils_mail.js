@@ -62,8 +62,9 @@ async function sendInvitationEmail(toEmail, fromFirstName) {
           margin: 0px;
       }
       #content img { 
-          max-width: 100%; 
-          height: auto }
+          max-width: 100%;
+          height: auto; 
+        }
   
       h1 {
           font-family: 'Roboto Condensed', sans-serif;
@@ -175,7 +176,7 @@ async function sendInvitationEmail(toEmail, fromFirstName) {
   
           /*  nav link */
           nav a, nav a:visited {
-              color: #fff
+              color: #fff;
           }
   
           /* Seleceted Nav link */
@@ -212,7 +213,7 @@ async function sendInvitationEmail(toEmail, fromFirstName) {
                   Consider this your formal invitation to join our community from your friend ${fromFirstName}.
                   </p>
                   <p> If chatting about the weather is not your thing, have no worries. There is no obligation
-                      And you are free to ignore this email if you wish.
+                      and you are free to ignore this email if you wish.
                   </p>
                   <p> Have a great day!<br><br>
   
