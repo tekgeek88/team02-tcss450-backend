@@ -293,11 +293,10 @@ router.get("/invite", (req, res) => {
     res.type("application/json");
 
     let fromUsername = req.query['from_username'];
-    let toFirstname = req.query['to_firstname'];
     let toEmail = req.query['to_email'];
 
     // Inform the user if they didn't enter username or location
-    if (!fromUsername && !toFirstname && !toEmail) {
+    if (!fromUsername && !toEmail) {
         return res.send({
             success: false,
             message: "Username, firstname, and email are ALL required!"
@@ -306,7 +305,7 @@ router.get("/invite", (req, res) => {
         // Select the username from the Members table so that we can aquire the MemberID
         db.one('SELECT Firstname FROM Members WHERE Username=$1', [fromUsername]).then(row => {
             let fromFirstName = [row['firstname']];
-            sendInvitationEmail(toFirstname, toEmail, fromFirstName)
+            sendInvitationEmail(toEmail, fromFirstName)
             .then(result => {
                 // console.log("#####    BEGIN MAIL TRANSACTION    #####");
                 console.log(result);
