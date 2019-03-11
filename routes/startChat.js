@@ -58,7 +58,7 @@ router.get("/", (req, res) => {
                                 db.none(query,params).then(()=> {
                                     res.send({
                                         success: true,                
-                                        message: 'Inserted the member into chatMembers'
+                                        message: 'Inserted'+(x+1)+'the member into chatMembers'
                                     });
                                 })
                                 .catch(function (err) {
