@@ -6,6 +6,7 @@ var pushyAPI = new Pushy(process.env.PUSHY_API_KEY);
 //use to send message to all clients registered to a Topoic 
 function sendToTopic(topic, msg, from, chatId) {
     //build the message for FCM to send
+    console.log("This weird shit is running!");
     var data = {
         "type": "topic_msg",
         "sender": from,
@@ -32,7 +33,7 @@ function sendToTopic(topic, msg, from, chatId) {
 
 //use to send message to a specific client by the token
 function sendToIndividual(token, msg, from, chatId) {
-
+    console.log("sending to individual: ");
     //build the message for FCM to send
     var data = {
         "type": "msg",
