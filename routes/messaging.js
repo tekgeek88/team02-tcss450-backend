@@ -14,17 +14,19 @@ let msg_functions = require('../utilities/utils').messaging;
 
 //send a message to all users "in" the chat session with chatId
 router.post("/send", (req, res) => {
+    
     let email = req.body['email'];
     let message = req.body['message'];
     let chatId = req.body['chat_id'];
     if(!email || !message || !chatId) {
-        console.log("Email: " + email + " message: " + message + " chat_id: " + chatId);
+        
         return res.send({
                 success: false,
                 message: "email, message, or chatId not supplied"
         });
         
     }
+    console.log("Email: " + email + " message: " + message + " chat_id: " + chatId);
     //add the message to the database
     let insert = `INSERT INTO Messages(ChatId, Message, MemberId)
                   SELECT $1, $2, MemberId FROM Members 
@@ -36,7 +38,7 @@ router.post("/send", (req, res) => {
         db.manyOrNone('SELECT * FROM Push_Token')
         .then(rows => {
             rows.forEach(element => {
-                msg_functions.sendToIndividual(element['token'], message, email);
+                msg_functions.sendToIndividual(element['token'], message, email, chatId);
             });
             return res.send({
                     success: true
