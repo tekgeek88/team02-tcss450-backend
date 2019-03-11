@@ -35,7 +35,7 @@ router.post("/send", (req, res) => {
     .then(() => {
 
         //send a notification of this message to ALL members with registered tokens
-        db.manyOrOne('SELECT token FROM Push_Token WHERE MEMBERID IN (SELECT MEMEBERID FROM CHATMEMBERS WHERE CHATID = $1)',[chatId])
+        db.manyOrOne('SELECT token FROM Push_Token WHERE MEMBERID IN (SELECT MEMBERID FROM CHATMEMBERS WHERE CHATID = $1)',[chatId])
         .then(rows => {
             rows.forEach(element => {
                 msg_functions.sendToIndividual(element['token'], message, email, chatId);
