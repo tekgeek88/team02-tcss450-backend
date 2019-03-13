@@ -605,8 +605,7 @@ async function sendPasswordEmail(email, newPassword) {
               <div id="body-wrapper">
 
                   <h4>Your temporary password has been generated and may now be used to sign in</h4>
-                  <p>
-                  Just re-open Chatter and use your new temporary password to sign in.<br><br>
+                  <p>Just re-open Chatter and use your new temporary password to sign in.<br><br>
                   ${newPassword}
                   </p>
                   <p> Have a great day!<br><br>
