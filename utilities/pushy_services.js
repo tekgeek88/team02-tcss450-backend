@@ -57,6 +57,36 @@ function sendToIndividual(token, msg, from, chatId) {
     });
 }
 
+//use to send message to a specific client by the token
+                    //  id, firstname, lastname, sentFromUsername); 
+function sendFriendRequest(token, id, fromFirstname, fromLastname, fromUsername) {
+    console.log("sending friend request notification: ");
+    //build the message for FCM to send
+    var data = {
+        "type": "conn",
+        "sender": fromUsername,
+        "message": fromFirstname +" sent you a friend request!",
+        "id": id,
+        "firstname": fromFirstname,
+        "lastname": fromLastname,
+        "isVerified": 0
+    };
+
+    console.log(data);
+
+    // Send push notification via the Send Notifications API 
+    // https://pushy.me/docs/api/send-notifications 
+    pushyAPI.sendPushNotification(data, token, {}, function (err, id) {
+        // Log errors to console 
+        if (err) {
+            return console.log('Fatal Error', err);
+        }
+
+        // Log success 
+        console.log('Push sent successfully! (ID: ' + id + ')');
+    });
+}
+
 module.exports = {
-    sendToTopic, sendToIndividual
+    sendToTopic, sendToIndividual, sendFriendRequest
 };

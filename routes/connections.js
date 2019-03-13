@@ -7,6 +7,8 @@ let db = require('../utilities/utils').db;
 
 let sendInvitationEmail = require('../utilities/utils_mail').sendInvitationEmail;
 
+let msg_functions = require('../utilities/utils').messaging;
+
 
 /** Fetch all of the contacts for the given user */
 router.get("/", (req, res) => {
@@ -142,14 +144,34 @@ router.put("/", (req, res) => {
     }
 
     // Get memberID for memberA
-    db.one('SELECT MemberID FROM Members WHERE Username=$1', [sentFromUsername]).then(row => {
+    db.one('SELECT MemberID, firstname, lastname FROM Members WHERE Username=$1', [sentFromUsername]).then(row => {
         let memberIdA = row['memberid'];
+        let firstname = row['firstname'];
+        let lastname = row['lastname'];
+        let memberid = row['memberid'];
         // Get memberID for memberB
         db.one('SELECT MemberID FROM Members WHERE Username=$1', [sentToUsername]).then(row => {
             let memberIdB = row['memberid'];
             console.log("inserting: " + memberIdA, memberIdB);
             // Insert into Contacts Member A friended Member B
             db.none("INSERT INTO Contacts (MemberID_A, MemberID_B) VALUES ($1, $2)", [memberIdA, memberIdB]).then(() => {
+                //send a notification to the person with this token
+                db.one(`SELECT token FROM Push_Token WHERE memberid = ${memberIdB}`).then(row => {
+                        msg_functions.sendFriendRequest(row['token'], memberid, firstname, lastname, sentFromUsername);
+                    }).catch(err => {
+                        console.log(err);
+                        return res.send({
+                                success: false,
+                                message: "Couldn't find a pushy token for that member!"
+                        });
+                    })
+                .catch(err => {
+                    console.log(err);
+                    return res.send({
+                            success: false,
+                            message: "Couldn't find a pushy token for that member!"
+                    });
+                })  
                 return res.send({
                     success: true,
                     message: 'Connection request has been made!'
