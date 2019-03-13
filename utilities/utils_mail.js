@@ -606,10 +606,15 @@ async function sendPasswordEmail(email, newPassword) {
 
                   <h4>Your temporary password has been generated and may now be used to sign in</h4>
                   <p>
+<<<<<<< HEAD
                   Please click the link below to reset your password.<br>
                   <a href="${newPassword}">${newPassword}</a>
                   </p>
                   <p>If you did not make this request please disregard and contact an admin
+=======
+                  Just re-open Chatter and use your new temporary password to sign in.<br><br>
+                  ${newPassword}
+>>>>>>> email-message-updates
                   </p>
                   <p> Have a great day!<br><br>
   
