@@ -604,14 +604,10 @@ async function sendPasswordEmail(email, newPassword) {
           <body>
               <div id="body-wrapper">
 
-                  <h2>Hello , please use the password below as sign in into the app</h2>
-                      <a href="${newPassword}">${newPassword}</a>
-
-
                   <h4>Your temporary password has been generated and may now be used to sign in</h4>
                   <p>
                   Please click the link below to reset your password.<br>
-                  <a href="${address}">${address}</a>
+                  <a href="${newPassword}">${newPassword}</a>
                   </p>
                   <p>If you did not make this request please disregard and contact an admin
                   </p>
